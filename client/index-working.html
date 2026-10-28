@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Droply — Drop it. Share it. Done.</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Smooth animations */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-slide-in-down { animation: slideInDown 0.6s ease-out; }
+        .animate-slide-in-up { animation: slideInUp 0.6s ease-out; }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out; }
+        .animate-scale-in { animation: scaleIn 0.5s ease-out; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        /* Button hover effects */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Input focus effect */
+        input, textarea, select {
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        /* File upload area */
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+            transform: scale(1.02);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* Feature cards */
+        .feature-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* Success animation */
+        @keyframes successPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-pop {
+            animation: successPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Spinner */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Message alerts */
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const { useState, useRef } = React;
+        const e = React.createElement;
+
+        function App() {
+            const [view, setView] = useState('home');
+            const [userCode, setUserCode] = useState('');
+            const [accessCode, setAccessCode] = useState('');
+            const [files, setFiles] = useState([]);
+            const [text, setText] = useState('');
+            const [expiresIn, setExpiresIn] = useState('3600');
+            const [loading, setLoading] = useState(false);
+            const [message, setMessage] = useState('');
+            const [uploadProgress, setUploadProgress] = useState(0);
+            const [accessedDrop, setAccessedDrop] = useState(null);
+            const fileInputRef = useRef(null);
+            const [dragOver, setDragOver] = useState(false);
+
+            const API_URL = 'http://localhost:4000/api/v1';
+
+            // HOME SCREEN
+            const renderHome = () => e('div', { className: 'min-h-screen flex items-center justify-center p-4 animate-fade-in' },
+                e('div', { className: 'max-w-2xl w-full text-center' },
+                    // Logo
+                    e('div', { className: 'mb-8 animate-slide-in-down' },
+                        e('div', { className: 'text-8xl mb-4 inline-block animate-float' }, '📦')
+                    ),
+
+                    // Heading
+                    e('h1', { className: 'text-5xl font-bold text-gray-800 mb-3 animate-slide-in-down' }, 'Droply'),
+                    e('p', { className: 'text-2xl text-gray-600 mb-3 animate-slide-in-down' }, 'Share Files Securely'),
+                    e('p', { className: 'text-lg text-gray-500 mb-12 animate-slide-in-down' }, 'Set your secret code, upload files, and share instantly'),
+                    
+                    // Buttons
+                    e('div', { className: 'grid grid-cols-1 sm:grid-cols-2 gap-4 animate-slide-in-up' },
+                        e('button', {
+                            onClick: () => {
+                                setUserCode('');
+                                setView('setcode');
+                                setMessage('');
+                                setFiles([]);
+                                setText('');
+                            },
+                            className: 'btn-primary text-white font-bold py-3 px-6 rounded-lg text-lg'
+                        }, '📤 Create a Drop'),
+                        
+                        e('button', {
+                            onClick: () => {
+                                setView('access');
+                                setAccessCode('');
+                                setMessage('');
+                            },
+                            className: 'btn-secondary text-white font-bold py-3 px-6 rounded-lg text-lg'
+                        }, '🔓 Access Drop')
+                    ),
+                    
+                    // Feature cards
+                    e('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 animate-scale-in' },
+                        e('div', { className: 'feature-card animate-slide-in-up' },
+                            e('div', { className: 'feature-icon' }, '🔒'),
+                            e('h3', { className: 'text-xl font-bold text-gray-800 mb-2' }, 'Secure'),
+                            e('p', { className: 'text-gray-600' }, 'Password protected access')
+                        ),
+                        e('div', { className: 'feature-card animate-slide-in-up' },
+                            e('div', { className: 'feature-icon' }, '⏰'),
+                            e('h3', { className: 'text-xl font-bold text-gray-800 mb-2' }, 'Temporary'),
+                            e('p', { className: 'text-gray-600' }, 'Auto-delete after expiry')
+                        ),
+                        e('div', { className: 'feature-card animate-slide-in-up' },
+                            e('div', { className: 'feature-icon' }, '📁'),
+                            e('h3', { className: 'text-xl font-bold text-gray-800 mb-2' }, 'Any File'),
+                            e('p', { className: 'text-gray-600' }, 'All file types supported')
+                        )
+                    )
+                )
+            );
+
+            // SET SECRET CODE
+            const renderSetCode = () => e('div', { className: 'min-h-screen flex items-center justify-center p-4 animate-fade-in' },
+                e('div', { className: 'w-full max-w-md' },
+                    e('button', {
+                        onClick: () => setView('home'),
+                        className: 'mb-8 text-gray-600 hover:text-gray-800 font-semibold text-lg'
+                    }, '← Back'),
+                    
+                    e('div', { className: 'card p-8 animate-scale-in' },
+                        e('div', { className: 'text-6xl text-center mb-6 animate-float' }, '🔐'),
+                        e('h2', { className: 'text-3xl font-bold text-gray-800 text-center mb-2' }, 'Set Your Code'),
+                        e('p', { className: 'text-gray-600 text-center mb-8' }, 'Create a secret code others will use'),
+                        
+                        message && e('div', {
+                            className: (message.includes('✅') ? 'alert-success' : 'alert-error') + ' p-4 rounded-lg mb-4 animate-slide-in-down'
+                        }, message),
+                        
+                        e('input', {
+                            type: 'password',
+                            value: userCode,
+                            onChange: (evt) => setUserCode(evt.target.value),
+                            placeholder: 'Enter secret code',
+                            className: 'w-full p-3 border rounded-lg text-lg mb-2'
+                        }),
+                        
+                        e('p', { className: 'text-xs text-gray-500 mb-6 text-center' }, 'Use letters, numbers, and special characters'),
+                        
+                        e('button', {
+                            onClick: () => {
+                                if (!userCode.trim()) {
+                                    setMessage('❌ Please enter a secret code');
+                                    return;
+                                }
+                                if (userCode.length < 4) {
+                                    setMessage('❌ Code must be at least 4 characters');
+                                    return;
+                                }
+                                setMessage('');
+                                setView('create');
+                            },
+                            className: 'btn-primary text-white font-bold py-3 w-full rounded-lg mb-3'
+                        }, 'Continue'),
+                        
+                        e('button', {
+                            onClick: () => setView('home'),
+                            className: 'w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition'
+                        }, 'Cancel')
+                    )
+                )
+            );
+
+            // ACCESS DROP
+            const renderAccess = () => e('div', { className: 'min-h-screen flex items-center justify-center p-4 animate-fade-in' },
+                e('div', { className: 'w-full max-w-md' },
+                    e('button', {
+                        onClick: () => setView('home'),
+                        className: 'mb-8 text-gray-600 hover:text-gray-800 font-semibold text-lg'
+                    }, '← Back'),
+                    
+                    e('div', { className: 'card p-8 animate-scale-in' },
+                        e('div', { className: 'text-6xl text-center mb-6 animate-float' }, '🔓'),
+                        e('h2', { className: 'text-3xl font-bold text-gray-800 text-center mb-2' }, 'Access Drop'),
+                        e('p', { className: 'text-gray-600 text-center mb-8' }, 'Enter the secret code'),
+                        
+                        message && e('div', {
+                            className: (message.includes('✅') ? 'alert-success' : 'alert-error') + ' p-4 rounded-lg mb-4 animate-slide-in-down'
+                        }, message),
+                        
+                        e('input', {
+                            type: 'password',
+                            value: accessCode,
+                            onChange: (evt) => setAccessCode(evt.target.value),
+                            placeholder: 'Enter secret code',
+                            className: 'w-full p-3 border rounded-lg text-lg mb-6'
+                        }),
+                        
+                        e('button', {
+                            onClick: async () => {
+                                if (!accessCode.trim()) {
+                                    setMessage('❌ Please enter the secret code');
+                                    return;
+                                }
+                                
+                                setLoading(true);
+                                try {
+                                    const response = await fetch(`${API_URL}/drops/resolve`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ code: accessCode })
+                                    });
+                                    
+                                    if (!response.ok) {
+                                        const error = await response.json();
+                                        const errorCode = error.error?.code;
+                                        let errorMsg = 'Failed to access drop';
+                                        
+                                        if (errorCode === 'DROP_NOT_FOUND') {
+                                            errorMsg = '❌ Drop not found. Please check your code.';
+                                        } else if (errorCode === 'DROP_EXPIRED') {
+                                            errorMsg = '❌ This drop has expired and is no longer available.';
+                                        } else if (errorCode === 'DROP_EXHAUSTED') {
+                                            errorMsg = '❌ This drop has reached its download limit.';
+                                        } else if (errorCode === 'DROP_DELETED') {
+                                            errorMsg = '❌ This drop was deleted.';
+                                        }
+                                        
+                                        throw new Error(errorMsg);
+                                    }
+                                    
+                                    const drop = await response.json();
+                                    setAccessedDrop(drop);
+                                    setMessage('✅ Access granted!');
+                                    setTimeout(() => setView('files'), 1000);
+                                } catch (err) {
+                                    setMessage(err.message || '❌ Invalid code');
+                                } finally {
+                                    setLoading(false);
+                                }
+                            },
+                            disabled: loading,
+                            className: 'btn-success text-white font-bold py-3 w-full rounded-lg disabled:opacity-50'
+                        }, loading ? '⏳ Verifying...' : '✓ Access Drop')
+                    )
+                )
+            );
+
+            // CREATE DROP
+            const renderCreate = () => {
+                const handleFileSelect = (fileList) => {
+                    const newFiles = Array.from(fileList).map(file => ({
+                        file,
+                        id: Math.random(),
+                        name: file.name,
+                        size: (file.size / 1024 / 1024).toFixed(2),
+                        type: file.type
+                    }));
+                    setFiles([...files, ...newFiles]);
+                };
+
+                const removeFile = (id) => {
+                    setFiles(files.filter(f => f.id !== id));
+                };
+
+                const handleDragOver = (e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                };
+
+                const handleDragLeave = () => {
+                    setDragOver(false);
+                };
+
+                const handleDrop = (e) => {
+                    e.preventDefault();
+                    setDragOver(false);
+                    handleFileSelect(e.dataTransfer.files);
+                };
+
+                const getFileIcon = (fileType) => {
+                    if (fileType.startsWith('image/')) return '🖼️';
+                    if (fileType.startsWith('video/')) return '🎬';
+                    if (fileType.startsWith('audio/')) return '🎵';
+                    if (fileType.includes('pdf')) return '📄';
+                    if (fileType.includes('word') || fileType.includes('document')) return '📝';
+                    if (fileType.includes('sheet') || fileType.includes('excel')) return '📊';
+                    if (fileType.includes('archive') || fileType.includes('zip')) return '📦';
+                    return '📎';
+                };
+
+                const handleCreateDrop = async () => {
+                    setLoading(true);
+                    setUploadProgress(0);
+
+                    try {
+                        // Map expiry time to server format
+                        let expiryType = '1h';
+                        const expirySeconds = parseInt(expiresIn);
+                        if (expirySeconds === 3600) expiryType = '1h';
+                        else if (expirySeconds === 86400) expiryType = '24h';
+                        else if (expirySeconds === 604800) expiryType = '7d';
+                        else if (expirySeconds === 2592000) expiryType = '7d'; // Use 7d for 30 days as server cap
+                        else expiryType = '1h'; // Default for custom times
+                        
+                        const dropResponse = await fetch(`${API_URL}/drops`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                text: text.trim() || undefined,
+                                code: userCode,
+                                expiry: expiryType
+                            })
+                        });
+
+                        if (!dropResponse.ok) {
+                            const error = await dropResponse.json();
+                            const errorCode = error.error?.code;
+                            let errorMsg = 'Failed to create drop';
+                            
+                            if (errorCode === 'CODE_IN_USE') {
+                                errorMsg = '❌ This code is already in use. Please choose a different code.';
+                            } else if (errorCode === 'EMPTY_DROP') {
+                                errorMsg = '❌ Add some text or upload at least one file.';
+                            }
+                            
+                            throw new Error(errorMsg);
+                        }
+                        
+                        const drop = await dropResponse.json();
+                        setUserCode(drop.code);
+                        
+                        if (files.length > 0) {
+                            for (let i = 0; i < files.length; i++) {
+                                const fileObj = files[i];
+                                
+                                try {
+                                    const formData = new FormData();
+                                    formData.append('file', fileObj.file);
+
+                                    const uploadResponse = await fetch(
+                                        `${API_URL}/drops/${drop.id}/files`,
+                                        {
+                                            method: 'POST',
+                                            body: formData
+                                        }
+                                    );
+
+                                    if (!uploadResponse.ok) {
+                                        throw new Error(`Failed to upload ${fileObj.name}`);
+                                    }
+
+                                    setUploadProgress(Math.round((i + 1) / files.length * 100));
+                                } catch (uploadErr) {
+                                    console.error('Upload error:', uploadErr);
+                                }
+                            }
+                        }
+
+                        setFiles([]);
+                        setText('');
+                        setUploadProgress(0);
+                        setMessage('');
+                        setView('created');
+                    } catch (err) {
+                        setMessage(`❌ Error: ${err.message}`);
+                        setUploadProgress(0);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
+                return e('div', { className: 'min-h-screen p-4 animate-fade-in' },
+                    e('div', { className: 'max-w-2xl mx-auto' },
+                        e('button', {
+                            onClick: () => setView('home'),
+                            className: 'mb-8 text-gray-600 hover:text-gray-800 font-semibold text-lg'
+                        }, '← Back'),
+                        
+                        e('div', { className: 'card p-8 animate-scale-in' },
+                            e('h2', { className: 'text-3xl font-bold text-gray-800 mb-2' }, '📤 Create a Drop'),
+                            e('p', { className: 'text-gray-600 mb-6' }, 'Share files, send a message, or both!'),
+                            
+                            e('div', { className: 'bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6 mb-8' },
+                                e('p', { className: 'text-gray-700 font-semibold mb-2' }, 'Your Secret Code:'),
+                                e('div', { className: 'flex items-center justify-between' },
+                                    e('code', { className: 'text-2xl font-bold text-purple-600 tracking-wider' }, userCode),
+                                    e('button', {
+                                        onClick: () => {
+                                            navigator.clipboard.writeText(userCode);
+                                            setMessage('✅ Code copied!');
+                                            setTimeout(() => setMessage(''), 2000);
+                                        },
+                                        className: 'bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition'
+                                    }, 'Copy')
+                                )
+                            ),
+
+                            message && e('div', {
+                                className: (message.includes('✅') ? 'alert-success' : 'alert-error') + ' p-4 rounded-lg mb-6 animate-slide-in-down'
+                            }, message),
+
+                            uploadProgress > 0 && uploadProgress < 100 && e('div', { className: 'mb-6' },
+                                e('div', { className: 'flex justify-between mb-2' },
+                                    e('span', { className: 'text-gray-700 font-semibold' }, 'Uploading...'),
+                                    e('span', { className: 'text-gray-600' }, uploadProgress + '%')
+                                ),
+                                e('div', { className: 'bg-gray-200 rounded-full h-3 overflow-hidden' },
+                                    e('div', {
+                                        className: 'progress-bar h-3 rounded-full transition-all',
+                                        style: { width: uploadProgress + '%' }
+                                    })
+                                )
+                            ),
+
+                            // OPTION 1: File Upload (Optional)
+                            e('div', { className: 'mb-8' },
+                                e('h3', { className: 'font-semibold text-gray-800 mb-4' }, '📁 Option 1: Upload Files (optional)'),
+                                e('div', {
+                                    className: 'upload-area p-12 mb-4 text-center ' + (dragOver ? 'dragover' : ''),
+                                    onDragOver: handleDragOver,
+                                    onDragLeave: handleDragLeave,
+                                    onDrop: handleDrop,
+                                    onClick: () => fileInputRef.current?.click()
+                                },
+                                    e('div', { className: 'text-5xl mb-4' }, '📁'),
+                                    e('p', { className: 'text-xl font-semibold text-gray-800 mb-2' }, 'Drag & Drop Files Here'),
+                                    e('p', { className: 'text-gray-600 mb-3' }, 'or click to browse'),
+                                    e('p', { className: 'text-sm text-gray-500' }, 'Any file type: images, videos, audio, documents, PDFs, etc.'),
+                                    e('input', {
+                                        ref: fileInputRef,
+                                        type: 'file',
+                                        multiple: true,
+                                        onChange: (evt) => handleFileSelect(evt.target.files),
+                                        className: 'hidden',
+                                        accept: '*/*'
+                                    })
+                                ),
+
+                                // Selected Files
+                                files.length > 0 && e('div', {},
+                                    e('h4', { className: 'font-semibold text-gray-800 mb-3' }, `✅ ${files.length} File(s) Selected`),
+                                    e('div', { className: 'space-y-2' },
+                                        files.map((fileObj, idx) => e('div', {
+                                            key: fileObj.id,
+                                            className: 'flex items-center justify-between p-3 bg-gray-50 rounded-lg animate-slide-in-up',
+                                            style: { animationDelay: `${idx * 0.1}s` }
+                                        },
+                                            e('div', { className: 'flex items-center gap-3' },
+                                                e('span', { className: 'text-2xl' }, getFileIcon(fileObj.type)),
+                                                e('div', { className: 'flex-1' },
+                                                    e('p', { className: 'font-semibold text-gray-800 truncate' }, fileObj.name),
+                                                    e('p', { className: 'text-sm text-gray-600' }, fileObj.size + ' MB')
+                                                )
+                                            ),
+                                            e('button', {
+                                                onClick: () => removeFile(fileObj.id),
+                                                className: 'text-red-600 hover:text-red-800 font-bold text-xl'
+                                            }, '✕')
+                                        ))
+                                    )
+                                )
+                            ),
+
+                            // OPTION 2: Add Message (Optional)
+                            e('div', { className: 'mb-8' },
+                                e('h3', { className: 'font-semibold text-gray-800 mb-4' }, '💬 Option 2: Add a Message (optional)'),
+                                e('textarea', {
+                                    value: text,
+                                    onChange: (evt) => setText(evt.target.value),
+                                    placeholder: 'Type your message here... or leave empty if just sharing files',
+                                    className: 'w-full p-4 border-2 border-gray-300 rounded-lg text-gray-800 focus:border-purple-600 focus:outline-none',
+                                    rows: 5
+                                })
+                            ),
+
+                            // Expiry
+                            e('div', { className: 'mb-8' },
+                                e('label', { className: 'block text-gray-800 font-semibold mb-3' }, '⏰ When should it expire?'),
+                                e('div', { className: 'flex gap-3' },
+                                    e('select', {
+                                        value: expiresIn,
+                                        onChange: (evt) => setExpiresIn(evt.target.value),
+                                        className: 'flex-1 p-3 border-2 border-gray-300 rounded-lg text-gray-800 focus:border-purple-600 focus:outline-none'
+                                    },
+                                        e('option', { value: '3600' }, '⏱️ 1 Hour'),
+                                        e('option', { value: '86400' }, '📅 1 Day'),
+                                        e('option', { value: '604800' }, '📆 1 Week'),
+                                        e('option', { value: '2592000' }, '📋 30 Days'),
+                                        e('option', { value: 'custom' }, '✏️ Custom (minutes)')
+                                    ),
+                                    expiresIn === 'custom' && e('input', {
+                                        type: 'number',
+                                        placeholder: 'Minutes',
+                                        min: '1',
+                                        max: '525600',
+                                        onChange: (evt) => setExpiresIn(evt.target.value * 60),
+                                        className: 'flex-1 p-3 border-2 border-gray-300 rounded-lg text-gray-800 focus:border-purple-600 focus:outline-none'
+                                    })
+                                )
+                            ),
+
+                            e('button', {
+                                onClick: handleCreateDrop,
+                                disabled: loading,
+                                className: 'btn-primary text-white font-bold py-4 w-full rounded-lg text-lg disabled:opacity-50 transition'
+                            }, loading ? '⏳ Creating Drop...' : '🚀 Create Drop')
+                        )
+                    )
+                );
+            };
+
+            // FILES ACCESS
+            const renderFiles = () => {
+                if (!accessedDrop) return null;
+
+                return e('div', { className: 'min-h-screen p-4 animate-fade-in' },
+                    e('div', { className: 'max-w-2xl mx-auto' },
+                        e('button', {
+                            onClick: () => setView('home'),
+                            className: 'mb-8 text-gray-600 hover:text-gray-800 font-semibold text-lg'
+                        }, '← Back'),
+                        
+                        e('div', { className: 'card p-8 animate-scale-in' },
+                            e('h2', { className: 'text-3xl font-bold text-gray-800 mb-6' }, '📥 Drop Contents'),
+                            
+                            accessedDrop.text && e('div', { className: 'bg-blue-50 border-l-4 border-blue-500 p-6 mb-8 rounded' },
+                                e('p', { className: 'text-gray-800 text-lg leading-relaxed whitespace-pre-wrap' }, accessedDrop.text)
+                            ),
+                            
+                            accessedDrop.files && accessedDrop.files.length > 0 && e('div', {},
+                                e('h3', { className: 'font-bold text-lg mb-4 text-gray-800' }, `📁 Files (${accessedDrop.files.length})`),
+                                e('div', { className: 'space-y-6' },
+                                    accessedDrop.files.map((file, idx) => {
+                                        const getFileIcon = (fileType) => {
+                                            if (fileType.startsWith('image/')) return '🖼️';
+                                            if (fileType.startsWith('video/')) return '🎬';
+                                            if (fileType.startsWith('audio/')) return '🎵';
+                                            if (fileType.includes('pdf')) return '📄';
+                                            if (fileType.includes('word') || fileType.includes('document')) return '📝';
+                                            if (fileType.includes('sheet') || fileType.includes('excel')) return '📊';
+                                            if (fileType.includes('archive') || fileType.includes('zip')) return '📦';
+                                            return '📎';
+                                        };
+                                        
+                                        const isImage = file.type.startsWith('image/');
+                                        const isVideo = file.type.startsWith('video/');
+                                        const isAudio = file.type.startsWith('audio/');
+                                        const isPdf = file.type.includes('pdf');
+                                        
+                                        return e('div', {
+                                            key: idx,
+                                            className: 'bg-gray-50 rounded-lg overflow-hidden animate-slide-in-up',
+                                            style: { animationDelay: `${idx * 0.1}s` }
+                                        },
+                                            // Preview area for images, videos, audio, PDFs
+                                            (isImage || isVideo || isAudio || isPdf) && e('div', {
+                                                className: 'w-full bg-gray-100 flex items-center justify-center overflow-auto mb-4'
+                                            },
+                                                isImage && e('img', {
+                                                    src: `${API_URL}/drops/${accessedDrop.id}/files/${file.id}/download?code=${accessCode}`,
+                                                    alt: file.name,
+                                                    className: 'max-h-96 max-w-full object-contain',
+                                                    onError: (evt) => {
+                                                        evt.target.style.display = 'none';
+                                                    }
+                                                }),
+                                                isVideo && e('video', {
+                                                    src: `${API_URL}/drops/${accessedDrop.id}/files/${file.id}/download?code=${accessCode}`,
+                                                    controls: true,
+                                                    className: 'max-h-96 max-w-full',
+                                                    style: { maxHeight: '400px' }
+                                                }),
+                                                isAudio && e('audio', {
+                                                    src: `${API_URL}/drops/${accessedDrop.id}/files/${file.id}/download?code=${accessCode}`,
+                                                    controls: true,
+                                                    className: 'w-full p-4',
+                                                    style: { minHeight: '50px' }
+                                                }),
+                                                isPdf && e('div', {
+                                                    className: 'w-full p-8 text-center text-gray-600'
+                                                },
+                                                    e('div', { className: 'text-6xl mb-4' }, '📄'),
+                                                    e('p', { className: 'text-lg font-semibold' }, 'PDF Preview'),
+                                                    e('p', { className: 'text-sm text-gray-500 mt-2' }, 'Click download to view')
+                                                )
+                                            ),
+                                            
+                                            // File info and download button
+                                            e('div', { className: 'p-4' },
+                                                e('div', { className: 'flex items-center justify-between' },
+                                                    e('div', { className: 'flex items-center gap-3' },
+                                                        e('span', { className: 'text-2xl' }, getFileIcon(file.type)),
+                                                        e('div', {},
+                                                            e('p', { className: 'font-semibold text-gray-800' }, file.name),
+                                                            e('p', { className: 'text-sm text-gray-600' }, (file.size / 1024 / 1024).toFixed(2) + ' MB')
+                                                        )
+                                                    ),
+                                                    e('a', {
+                                                        href: `${API_URL}/drops/${accessedDrop.id}/files/${file.id}/download?code=${accessCode}`,
+                                                        download: file.name,
+                                                        className: 'btn-success text-white px-6 py-2 rounded font-semibold whitespace-nowrap'
+                                                    }, '⬇️ Download')
+                                                )
+                                            )
+                                        );
+                                    })
+                                )
+                            ),
+                            
+                            (!accessedDrop.files || accessedDrop.files.length === 0) && !accessedDrop.text && e('div', { className: 'text-center text-gray-600 py-12' },
+                                e('p', { className: 'text-lg' }, 'This drop is empty')
+                            ),
+                            
+                            e('p', { className: 'text-sm text-gray-600 mt-8' }, `⏱️ Expires: ${new Date(accessedDrop.expiresAt).toLocaleString()}`)
+                        )
+                    )
+                );
+            };
+
+            // CREATED SUCCESS
+            const renderCreated = () => {
+                return e('div', { className: 'min-h-screen flex items-center justify-center p-4 animate-fade-in' },
+                    e('div', { className: 'card p-12 max-w-md w-full text-center success-pop' },
+                        e('div', { className: 'text-7xl mb-6 animate-float' }, '🎉'),
+                        e('h2', { className: 'text-4xl font-bold text-gray-800 mb-4' }, 'Drop Created!'),
+                        e('p', { className: 'text-gray-600 mb-8' }, 'Share this secret code with others:'),
+                        
+                        e('div', { className: 'bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-300 rounded-lg p-6 mb-8' },
+                            e('code', { className: 'text-3xl font-bold text-purple-700 break-all tracking-wider' }, userCode)
+                        ),
+                        
+                        e('button', {
+                            onClick: () => {
+                                navigator.clipboard.writeText(userCode);
+                                setMessage('✅ Code copied!');
+                            },
+                            className: 'btn-primary text-white font-bold py-3 w-full rounded-lg mb-4'
+                        }, '📋 Copy Secret Code'),
+                        
+                        e('button', {
+                            onClick: () => {
+                                setView('home');
+                                setUserCode('');
+                                setFiles([]);
+                                setText('');
+                                setMessage('');
+                            },
+                            className: 'w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition'
+                        }, 'Back to Home')
+                    )
+                );
+            };
+
+            return e('div', {},
+                view === 'home' && renderHome(),
+                view === 'setcode' && renderSetCode(),
+                view === 'create' && renderCreate(),
+                view === 'access' && renderAccess(),
+                view === 'files' && renderFiles(),
+                view === 'created' && renderCreated()
+            );
+        }
+
+        ReactDOM.render(e(App), document.getElementById('root'));
+    </script>
+</body>
+</html>

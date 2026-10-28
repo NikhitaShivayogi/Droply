@@ -1,0 +1,17 @@
+{
+  "name": "droply",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm --prefix server run dev\" \"node client/dev-server.js\"",
+    "build": "npm --prefix client run build",
+    "test": "npm --prefix server run test && npm --prefix client run test",
+    "test:e2e": "playwright test",
+    "start": "npm --prefix server run start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "@playwright/test": "^1.51.0"
+  }
+}

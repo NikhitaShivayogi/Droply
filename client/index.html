@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Droply - Share Files Securely</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #ffffff;
+            background-attachment: fixed;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header/Navigation */
+        header {
+            display: none !important;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #3b82f6;
+        }
+
+        .nav-links {
+            display: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: none !important;
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 900;
+            color: #000;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border-color: white;
+            color: #764ba2;
+        }
+
+        /* Features Section */
+        .features {
+            display: none !important;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 60px;
+            color: #000;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 12px;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .feature-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Modal/Dialog */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            position: relative;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            color: #000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #f0f4ff 0%, #f5f3ff 100%);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.1);
+        }
+
+        .upload-zone.dragover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 100%);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .upload-zone.dragover::before {
+            opacity: 1;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* File List */
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            background: #f3f4f6;
+            transform: translateX(4px);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .message-error {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border: 1px solid #fca5a5;
+        }
+
+        /* Progress */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+
+        /* Code Display */
+        .code-display {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 16px;
+            color: #60a5fa;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            margin-top: 16px;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        /* Success Screen */
+        .success-screen {
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #000;
+        }
+
+        .success-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .code-box {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 30px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 20px;
+            font-weight: bold;
+            color: #60a5fa;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal {
+                padding: 30px 20px;
+                width: 95%;
+                max-width: none;
+            }
+
+            /* Stack columns on mobile */
+            [style*="gridTemplateColumns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .upload-zone {
+                min-height: 250px !important;
+            }
+
+            .form-textarea {
+                min-height: 250px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .modal {
+                padding: 20px 16px;
+            }
+
+            .modal-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const { useState, useRef } = React;
+        const e = React.createElement;
+
+        function App() {
+            const [view, setView] = useState('home');
+            const [code, setCode] = useState('');
+            const [accessCode, setAccessCode] = useState('');
+            const [showAccessCode, setShowAccessCode] = useState(false); // Eye icon for access code
+            const [files, setFiles] = useState([]);
+            const [text, setText] = useState('');
+            const [expiry, setExpiry] = useState('1h');
+            const [loading, setLoading] = useState(false);
+            const [progress, setProgress] = useState(0);
+            const [message, setMessage] = useState('');
+            const [drop, setDrop] = useState(null);
+            const [dragOver, setDragOver] = useState(false);
+            const [step, setStep] = useState(1); // Step 1: Code, Step 2: Upload
+            const [showCode, setShowCode] = useState(false); // Toggle password visibility
+            const [codeError, setCodeError] = useState(''); // Real-time code validation error
+            const fileRef = useRef(null);
+
+            const API = 'http://localhost:4000/api/v1';
+
+            // HOME PAGE
+            if (view === 'home') {
+                return e('div', { style: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', position: 'relative', overflow: 'hidden', background: '#ffffff' } },
+                    e('div', { style: { textAlign: 'center', maxWidth: '500px', position: 'relative', zIndex: '1' } },
+                        // Project Name/Logo with animation
+                        e('h1', { style: { fontSize: '80px', fontWeight: '900', marginBottom: '20px', letterSpacing: '-3px', animation: 'slideInDown 0.6s ease-out', background: 'linear-gradient(135deg, #667eea, #764ba2)', borderRadius: '20px', padding: '20px 40px', boxShadow: '0 15px 40px rgba(102, 126, 234, 0.3)', display: 'inline-block' } }, '📦'),
+                        
+                        e('h2', { style: { fontSize: '56px', fontWeight: '900', color: '#000', marginBottom: '40px', textShadow: 'none', animation: 'slideInDown 0.7s ease-out 0.1s both', letterSpacing: '-1px' } }, 'Droply'),
+                        
+                        // Subtitle
+                        e('p', { style: { fontSize: '18px', color: '#666', marginBottom: '60px', lineHeight: '1.6', animation: 'slideInUp 0.7s ease-out 0.2s both', textShadow: 'none', fontWeight: '500' } }, 'Share files securely with a secret code. No signup. No complications.'),
+                        
+                        // Two Buttons
+                        e('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px', animation: 'slideInUp 0.8s ease-out 0.3s both' } },
+                            e('button', {
+                                className: 'btn btn-primary',
+                                onClick: () => { setView('create'); setStep(1); setCode(''); setFiles([]); setText(''); },
+                                style: { width: '100%', padding: '18px 40px', fontSize: '17px', fontWeight: '700', letterSpacing: '0.5px', transition: 'all 0.3s ease', cursor: 'pointer' }
+                            }, '📤 Create Drop'),
+                            
+                            e('button', {
+                                className: 'btn btn-secondary',
+                                onClick: () => setView('access'),
+                                style: { width: '100%', padding: '18px 40px', fontSize: '17px', fontWeight: '700', letterSpacing: '0.5px', transition: 'all 0.3s ease', cursor: 'pointer' }
+                            }, '📥 Access Drop')
+                        )
+                    )
+                );
+            }
+
+            // CREATE PAGE - STEP 1: Enter Secret Code
+            if (view === 'create' && step === 1) {
+                const checkCodeExists = async (codeValue) => {
+                    if (!codeValue.trim() || codeValue.length < 4) {
+                        setCodeError('');
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`${API}/drops/resolve`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ code: codeValue })
+                        });
+
+                        if (res.ok) {
+                            setCodeError('❌ This code already exists. Please choose a different one.');
+                        } else {
+                            setCodeError('');
+                        }
+                    } catch (err) {
+                        setCodeError('');
+                    }
+                };
+
+                return e('div', { className: 'modal-overlay' },
+                    e('div', { className: 'modal', style: { maxWidth: '500px' } },
+                        e('button', { className: 'modal-close', onClick: () => { setView('home'); setStep(1); setCode(''); setCodeError(''); } }, '✕'),
+                        e('h2', { className: 'modal-title' }, '🔐 Secret Code'),
+
+                        message && e('div', { className: `message ${message.includes('❌') ? 'message-error' : 'message-success'}` }, message),
+
+                        e('p', { style: { color: '#666', marginBottom: '24px', fontSize: '15px' } }, 'Enter a secret code to protect your drop'),
+
+                        e('div', { className: 'form-group' },
+                            e('div', { style: { position: 'relative', display: 'flex', alignItems: 'center' } },
+                                e('input', {
+                                    type: showCode ? 'text' : 'password',
+                                    className: 'form-input',
+                                    placeholder: 'Enter your secret code',
+                                    value: code,
+                                    onChange: (ev) => {
+                                        setCode(ev.target.value);
+                                        checkCodeExists(ev.target.value);
+                                    },
+                                    disabled: loading,
+                                    style: { fontSize: '16px', padding: '14px', paddingRight: '44px' },
+                                    onKeyPress: (ev) => {
+                                        if (ev.key === 'Enter' && code.trim() && !codeError) {
+                                            setStep(2);
+                                            setMessage('');
+                                        }
+                                    }
+                                }),
+                                e('button', {
+                                    onClick: () => setShowCode(!showCode),
+                                    style: {
+                                        position: 'absolute',
+                                        right: '12px',
+                                        background: 'none',
+                                        border: 'none',
+                                        fontSize: '20px',
+                                        cursor: 'pointer',
+                                        color: '#667eea',
+                                        padding: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }
+                                }, showCode ? '👁️' : '👁️‍🗨️')
+                            )
+                        ),
+
+                        codeError && e('div', { className: 'message message-error', style: { marginBottom: '20px' } }, codeError),
+
+                        e('button', {
+                            className: 'btn btn-primary',
+                            onClick: () => {
+                                if (!code.trim()) {
+                                    setMessage('❌ Please enter a code');
+                                    return;
+                                }
+                                if (codeError) {
+                                    setMessage('❌ ' + codeError);
+                                    return;
+                                }
+                                setStep(2);
+                                setMessage('');
+                            },
+                            disabled: loading || !!codeError,
+                            style: { width: '100%', padding: '14px 40px', fontSize: '16px', opacity: codeError ? 0.6 : 1, cursor: codeError ? 'not-allowed' : 'pointer' }
+                        }, 'Continue →')
+                    )
+                );
+            }
+
+            // CREATE PAGE - STEP 2: Upload Files & Text
+            if (view === 'create' && step === 2) {
+                const handleCreate = async () => {
+                    // Convert custom expiry format to API format
+                    let apiExpiry = '1h'; // default
+                    const expiryMatch = expiry.match(/(\d+)([mhd])/);
+                    if (expiryMatch) {
+                        const num = parseInt(expiryMatch[1]);
+                        const unit = expiryMatch[2];
+                        
+                        // Convert to API format (10m, 1h, 24h, 7d)
+                        if (unit === 'm') {
+                            if (num >= 60) {
+                                apiExpiry = Math.floor(num / 60) + 'h';
+                            } else if (num >= 10) {
+                                apiExpiry = num + 'm';
+                            } else {
+                                apiExpiry = '10m'; // minimum 10 minutes
+                            }
+                        } else if (unit === 'h') {
+                            if (num <= 24) {
+                                apiExpiry = num + 'h';
+                            } else {
+                                apiExpiry = Math.floor(num / 24) + 'd';
+                            }
+                        } else if (unit === 'd') {
+                            apiExpiry = num + 'd';
+                        }
+                    }
+
+                    setLoading(true);
+                    setProgress(0);
+
+                    try {
+                        const res = await fetch(`${API}/drops`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ code, text: text || undefined, expiry: apiExpiry })
+                        });
+
+                        if (!res.ok) {
+                            const err = await res.json();
+                            throw new Error(err.error?.message || 'Failed to create drop');
+                        }
+                        const data = await res.json();
+
+                        for (let i = 0; i < files.length; i++) {
+                            const fd = new FormData();
+                            fd.append('file', files[i].file);
+                            await fetch(`${API}/drops/${data.id}/files`, { method: 'POST', body: fd });
+                            setProgress(Math.round((i + 1) / files.length * 100));
+                        }
+
+                        setDrop(data);
+                        setView('success');
+                    } catch (err) {
+                        setMessage('❌ ' + err.message);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
+                return e('div', { className: 'modal-overlay' },
+                    e('div', { className: 'modal', style: { maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto' } },
+                        e('button', { className: 'modal-close', onClick: () => { setStep(1); setCode(''); setFiles([]); setText(''); setMessage(''); } }, '✕'),
+                        e('h2', { className: 'modal-title' }, '📤 Upload'),
+
+                        message && e('div', { className: `message ${message.includes('❌') ? 'message-error' : 'message-success'}` }, message),
+
+                        // Two-Column Layout - SWAPPED: Text on left (big), Files on right (small)
+                        e('div', { style: { display: 'grid', gridTemplateColumns: '1.5fr 0.8fr', gap: '24px', marginBottom: '24px' } },
+                            // LEFT COLUMN: TEXT MESSAGE (MAIN FOCUS - LARGER)
+                            e('div', {},
+                                e('label', { className: 'form-label', style: { marginBottom: '16px', fontSize: '16px', fontWeight: '700' } }, '💬 Message (Main)'),
+                                e('textarea', {
+                                    className: 'form-textarea',
+                                    placeholder: 'Paste text, code, notes, API keys, passwords, secrets...',
+                                    value: text,
+                                    onChange: (e) => setText(e.target.value),
+                                    disabled: loading,
+                                    style: { minHeight: '400px', resize: 'none', fontSize: '15px', padding: '16px', fontFamily: 'monospace' }
+                                })
+                            ),
+
+                            // RIGHT COLUMN: FILE UPLOAD (SECONDARY - SMALLER)
+                            e('div', {},
+                                e('label', { className: 'form-label', style: { marginBottom: '16px', fontSize: '14px', fontWeight: '600' } }, '📁 Files (Optional)'),
+                                e('div', {
+                                    className: `upload-zone ${dragOver ? 'dragover' : ''}`,
+                                    onDragOver: (e) => { e.preventDefault(); setDragOver(true); },
+                                    onDragLeave: () => setDragOver(false),
+                                    onDrop: (e) => {
+                                        e.preventDefault();
+                                        setDragOver(false);
+                                        Array.from(e.dataTransfer.files).forEach(f => {
+                                            setFiles(p => [...p, { file: f, id: Math.random(), name: f.name, size: f.size }]);
+                                        });
+                                    },
+                                    onClick: () => fileRef.current?.click(),
+                                    style: { minHeight: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '20px' }
+                                },
+                                    e('div', { className: 'upload-icon', style: { fontSize: '32px' } }, '⬆️'),
+                                    e('div', { className: 'upload-text', style: { fontSize: '14px', marginBottom: '4px' } }, 'Drag files or click'),
+                                    e('div', { className: 'upload-hint', style: { fontSize: '12px' } }, 'All types OK'),
+                                    e('input', {
+                                        ref: fileRef,
+                                        type: 'file',
+                                        multiple: true,
+                                        style: { display: 'none' },
+                                        onChange: (e) => {
+                                            Array.from(e.target.files).forEach(f => {
+                                                setFiles(p => [...p, { file: f, id: Math.random(), name: f.name, size: f.size }]);
+                                            });
+                                        }
+                                    })
+                                ),
+                                files.length > 0 && e('div', { className: 'file-list', style: { marginTop: '12px', maxHeight: '150px', overflowY: 'auto' } },
+                                    e('div', { style: { fontSize: '12px', fontWeight: '600', color: '#666', marginBottom: '8px' } }, `📋 ${files.length} file${files.length !== 1 ? 's' : ''}`),
+                                    files.map(f => e('div', { key: f.id, className: 'file-item', style: { padding: '8px 10px', marginBottom: '6px' } },
+                                        e('div', { className: 'file-info' },
+                                            e('div', { style: { fontSize: '12px' } }, '📄'),
+                                            e('div', {},
+                                                e('div', { className: 'file-name', style: { fontSize: '12px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, f.name),
+                                                e('div', { className: 'file-size', style: { fontSize: '11px' } }, (f.size / 1024 / 1024).toFixed(2) + ' MB')
+                                            )
+                                        ),
+                                        e('button', { className: 'remove-btn', onClick: () => setFiles(files.filter(x => x.id !== f.id)), style: { fontSize: '16px' } }, '✕')
+                                    ))
+                                )
+                            )
+                        ),
+
+                        // Expiry and Create Button
+                        e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' } },
+                            e('div', { className: 'form-group', style: { marginBottom: '0' } },
+                                e('label', { className: 'form-label' }, '⏰ Expires In'),
+                                e('div', { style: { display: 'flex', gap: '8px', alignItems: 'center' } },
+                                    e('input', {
+                                        type: 'number',
+                                        className: 'form-input',
+                                        placeholder: '1',
+                                        value: expiry.split('m')[0] || '1',
+                                        onChange: (e) => {
+                                            const val = e.target.value;
+                                            if (val) setExpiry(val + 'm');
+                                        },
+                                        disabled: loading,
+                                        style: { fontSize: '15px', padding: '12px', flex: '1' }
+                                    }),
+                                    e('select', {
+                                        className: 'form-select',
+                                        value: expiry.includes('m') ? 'm' : expiry.includes('h') ? 'h' : expiry.includes('d') ? 'd' : 'h',
+                                        onChange: (e) => {
+                                            const numPart = expiry.replace(/[a-z]/g, '');
+                                            setExpiry(numPart + e.target.value);
+                                        },
+                                        disabled: loading,
+                                        style: { fontSize: '14px', padding: '12px', flex: '0.7' }
+                                    },
+                                        e('option', { value: 'm' }, 'Minutes'),
+                                        e('option', { value: 'h' }, 'Hours'),
+                                        e('option', { value: 'd' }, 'Days')
+                                    )
+                                )
+                            ),
+                            e('div', {})
+                        ),
+
+                        progress > 0 && progress < 100 && e('div', {},
+                            e('div', { style: { fontSize: '13px', color: '#666', marginBottom: '8px' } }, `Uploading: ${progress}%`),
+                            e('div', { className: 'progress-bar' },
+                                e('div', { className: 'progress-fill', style: { width: progress + '%' } })
+                            )
+                        ),
+
+                        e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' } },
+                            e('button', {
+                                className: 'btn btn-secondary',
+                                onClick: () => { setStep(1); setFiles([]); setText(''); setMessage(''); },
+                                disabled: loading,
+                                style: { padding: '14px 20px', fontSize: '15px' }
+                            }, '← Back'),
+                            
+                            e('button', {
+                                className: 'btn btn-primary',
+                                onClick: handleCreate,
+                                disabled: loading,
+                                style: { padding: '14px 20px', fontSize: '15px' }
+                            }, loading ? '⏳ Creating...' : '🚀 Create Drop')
+                        )
+                    )
+                );
+            }
+
+            // ACCESS PAGE
+            if (view === 'access') {
+                return e('div', { className: 'modal-overlay' },
+                    e('div', { className: 'modal' },
+                        e('button', { className: 'modal-close', onClick: () => { setView('home'); setAccessCode(''); setMessage(''); } }, '✕'),
+                        e('h2', { className: 'modal-title' }, '📥 Access Drop'),
+
+                        message && e('div', { className: `message ${message.includes('❌') ? 'message-error' : 'message-success'}` }, message),
+
+                        e('p', { style: { color: '#666', marginBottom: '24px', fontSize: '15px' } }, 'Enter the secret code to access a drop'),
+
+                        e('div', { className: 'form-group' },
+                            e('div', { style: { position: 'relative', display: 'flex', alignItems: 'center' } },
+                                e('input', {
+                                    type: showAccessCode ? 'text' : 'password',
+                                    className: 'form-input',
+                                    placeholder: 'Enter the secret code',
+                                    value: accessCode,
+                                    onChange: (e) => setAccessCode(e.target.value),
+                                    disabled: loading,
+                                    style: { fontSize: '16px', padding: '14px', paddingRight: '44px' },
+                                    onKeyPress: (ev) => {
+                                        if (ev.key === 'Enter' && accessCode.trim()) {
+                                            ev.preventDefault();
+                                            // Trigger access
+                                            (async () => {
+                                                setLoading(true);
+                                                try {
+                                                    const res = await fetch(`${API}/drops/resolve`, {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({ code: accessCode })
+                                                    });
+                                                    if (!res.ok) throw new Error('Invalid code');
+                                                    const data = await res.json();
+                                                    setDrop({ ...data, accessCode });
+                                                    setView('download');
+                                                } catch (err) {
+                                                    setMessage('❌ Invalid code or drop expired');
+                                                } finally {
+                                                    setLoading(false);
+                                                }
+                                            })();
+                                        }
+                                    }
+                                }),
+                                e('button', {
+                                    onClick: () => setShowAccessCode(!showAccessCode),
+                                    style: {
+                                        position: 'absolute',
+                                        right: '12px',
+                                        background: 'none',
+                                        border: 'none',
+                                        fontSize: '20px',
+                                        cursor: 'pointer',
+                                        color: '#667eea',
+                                        padding: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }
+                                }, showAccessCode ? '👁️' : '👁️‍🗨️')
+                            )
+                        ),
+
+                        e('button', {
+                            className: 'btn btn-primary',
+                            onClick: async () => {
+                                setLoading(true);
+                                try {
+                                    const res = await fetch(`${API}/drops/resolve`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ code: accessCode })
+                                    });
+                                    if (!res.ok) throw new Error('Invalid code');
+                                    const data = await res.json();
+                                    setDrop({ ...data, accessCode });
+                                    setView('download');
+                                } catch (err) {
+                                    setMessage('❌ Invalid code or drop expired');
+                                } finally {
+                                    setLoading(false);
+                                }
+                            },
+                            disabled: loading,
+                            style: { width: '100%', padding: '14px 40px', fontSize: '16px' }
+                        }, loading ? '⏳ Accessing...' : 'Access Drop')
+                    )
+                );
+            }
+
+            // DOWNLOAD PAGE
+            if (view === 'download' && drop) {
+                return e('div', { className: 'modal-overlay' },
+                    e('div', { className: 'modal' },
+                        e('button', { className: 'modal-close', onClick: () => setView('home') }, '✕'),
+                        e('h2', { className: 'modal-title' }, '📦 Drop Contents'),
+
+                        drop.text && e('div', {},
+                            e('label', { className: 'form-label', style: { marginBottom: '12px' } }, 'Message:'),
+                            e('div', { className: 'code-display', style: { whiteSpace: 'pre-wrap', textAlign: 'left', height: 'auto' } }, drop.text)
+                        ),
+
+                        drop.files && drop.files.length > 0 && e('div', { style: { marginTop: '30px' } },
+                            e('label', { className: 'form-label' }, `📁 Files (${drop.files.length})`),
+                            e('div', { className: 'file-list' },
+                                drop.files.map((f, i) => e('div', { key: i, className: 'file-item' },
+                                    e('div', { className: 'file-info' },
+                                        e('div', { style: { fontSize: '18px' } }, '📄'),
+                                        e('div', {},
+                                            e('div', { className: 'file-name' }, f.name),
+                                            e('div', { className: 'file-size' }, (f.size / 1024 / 1024).toFixed(2) + ' MB')
+                                        )
+                                    ),
+                                    e('a', {
+                                        href: `${API}/drops/${drop.id}/files/${f.id}/download?code=${drop.accessCode}`,
+                                        download: f.name,
+                                        className: 'btn btn-primary',
+                                        style: { padding: '8px 16px', fontSize: '13px' }
+                                    }, '⬇️ Download')
+                                ))
+                            )
+                        )
+                    )
+                );
+            }
+
+            // SUCCESS PAGE
+            if (view === 'success' && drop) {
+                return e('div', { className: 'modal-overlay' },
+                    e('div', { className: 'modal' },
+                        e('div', { className: 'success-screen' },
+                            e('div', { className: 'success-icon' }, '🎉'),
+                            e('h2', { className: 'success-title' }, 'Drop Created Successfully!'),
+                            e('p', { className: 'success-subtitle' }, 'Share this code with others'),
+                            e('div', { className: 'code-box' }, drop.code),
+                            e('button', {
+                                className: 'btn btn-primary',
+                                onClick: () => { navigator.clipboard.writeText(drop.code); setMessage('✅ Code copied!'); },
+                                style: { width: '100%' }
+                            }, '📋 Copy Code'),
+                            e('button', {
+                                className: 'btn btn-secondary',
+                                onClick: () => { setView('home'); setCode(''); setFiles([]); setText(''); setMessage(''); },
+                                style: { width: '100%', marginTop: '12px' }
+                            }, 'Create Another Drop')
+                        )
+                    )
+                );
+            }
+        }
+
+        ReactDOM.render(e(App), document.getElementById('root'));
+    </script>
+</body>
+</html>
