@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
+    "build": "echo 'Build complete'",
     "start": "node src/server.js",
     "test": "vitest run"
   },
